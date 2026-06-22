@@ -31,7 +31,9 @@ RUN npm run build
 FROM deps AS dev
 
 WORKDIR /app
-# El código fuente se monta via volumen en docker-compose.override.yml
+# Copiar archivos de configuración (no están en el volumen montado)
+COPY tsconfig.json next.config.ts tailwind.config.ts postcss.config.mjs ./
+# El código fuente (src/ y public/) se monta via volumen en docker-compose.override.yml
 ENV NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
