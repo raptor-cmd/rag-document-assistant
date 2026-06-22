@@ -1,0 +1,32 @@
+# Secrets — nunca en la imagen
+.env
+.env.*
+!.env.example
+
+# Dependencias y build (se regeneran en el stage deps/builder)
+node_modules/
+.next/
+out/
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+README*
+
+# IDE y OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Tests
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
