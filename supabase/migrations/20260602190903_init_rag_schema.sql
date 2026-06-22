@@ -37,3 +37,7 @@ as $$
     order by documents.embedding <=> query_embedding asc
     limit match_count;
 $$;
+
+-- 5. Permisos para service_role (usado por el backend FastAPI)
+grant all on public.documents to service_role;
+grant execute on function match_documents(vector, double precision, integer) to service_role;
