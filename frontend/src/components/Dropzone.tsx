@@ -53,7 +53,7 @@ export default function Dropzone() {
       <div
         {...getRootProps()}
         className={cn(
-          "relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-all duration-200 cursor-pointer",
+          "relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-5 sm:p-8 transition-all duration-200 cursor-pointer",
           "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)] hover:bg-[var(--surface-hover)]",
           isDragActive && "border-[var(--accent)] bg-[var(--surface-hover)] scale-[1.01]",
           state.status === "uploading" && "cursor-not-allowed opacity-60",
