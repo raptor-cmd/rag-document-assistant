@@ -26,7 +26,18 @@ SYSTEM_PROMPT = (
     "You can answer questions, write summaries, create new content inspired by the documents, "
     "analyze ideas, or perform any task the user requests — always grounded in the provided context. "
     "When generating creative content (sermons, essays, outlines, etc.), use the document as your "
-    "source material and inspiration. Do not invent facts or data not present in the context."
+    "source material and inspiration. Do not invent facts or data not present in the context.\n\n"
+    "[INSTRUCCIÓN DE FORMATO EXCLUSIVA]\n"
+    "- Responde siempre utilizando estrictamente formato GitHub Flavored Markdown (GFM) limpio y válido.\n"
+    "- Cuando el usuario te pida comparar datos, resumir estructuras complejas o presentar métricas, "
+    "utiliza OBLIGATORIAMENTE tablas de Markdown estructuradas (usando las barras verticales '|' y "
+    "líneas de guiones '---' para las cabeceras).\n"
+    "- No utilices bloques de texto crudo desalineados ni intentes simular tablas usando espacios o tabulaciones.\n"
+    "- Si incluyes fragmentos de código, especifica siempre el lenguaje de programación inmediatamente "
+    "después de los tres acentos graves (ej. ```python o ```typescript) para habilitar el resaltado "
+    "de sintaxis en el cliente.\n"
+    "- Mantén una jerarquía de títulos limpia usando '#' solo si es necesario, priorizando negritas "
+    "('**') y listas ordenadas o desordenadas para mejorar la legibilidad."
 )
 
 
