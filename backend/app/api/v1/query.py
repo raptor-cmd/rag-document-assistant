@@ -7,8 +7,8 @@ from supabase import AsyncClient
 
 from app.core.config import get_settings
 from app.core.security import limiter
-from app.models.query import DocumentMatch, QueryRequest
-from app.services.retrieval_service import retrieve_similar_documents, stream_rag_response
+from app.models.query import DocumentMatch, ParentContext, QueryRequest
+from app.services.retrieval_service import retrieve_parent_contexts, stream_rag_response
 
 router = APIRouter()
 
@@ -23,13 +23,14 @@ def get_openai(request: Request) -> AsyncOpenAI:
 
 async def _event_stream(
     query: str,
-    matches: list[DocumentMatch],
+    contexts: list[ParentContext],
+    sources: list[DocumentMatch],
     openai_client: AsyncOpenAI,
 ):
-    sources_payload = json.dumps([m.model_dump() for m in matches])
+    sources_payload = json.dumps([s.model_dump() for s in sources])
     yield f"data: {json.dumps({'type': 'sources', 'data': sources_payload})}\n\n"
 
-    async for token in stream_rag_response(query, matches, openai_client):
+    async for token in stream_rag_response(query, contexts, openai_client):
         yield f"data: {json.dumps({'type': 'token', 'data': token})}\n\n"
 
     yield "data: [DONE]\n\n"
@@ -48,16 +49,17 @@ async def query_documents(
     supabase: AsyncClient = Depends(get_supabase),
     openai_client: AsyncOpenAI = Depends(get_openai),
 ) -> StreamingResponse:
-    matches = await retrieve_similar_documents(
+    contexts, sources = await retrieve_parent_contexts(
         query=body.query,
         supabase=supabase,
         openai_client=openai_client,
         match_count=body.match_count,
         match_threshold=body.match_threshold,
+        document_ids=body.document_ids or None,
     )
 
     return StreamingResponse(
-        _event_stream(body.query, matches, openai_client),
+        _event_stream(body.query, contexts, sources, openai_client),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

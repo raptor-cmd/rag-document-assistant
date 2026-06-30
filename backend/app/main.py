@@ -64,7 +64,7 @@ async def health_check(request: Request) -> JSONResponse:
     overall = "ok"
 
     try:
-        await request.app.state.supabase.table("documents").select("id").limit(1).execute()
+        await request.app.state.supabase.table("child_chunks").select("id").limit(1).execute()
     except Exception as exc:
         logger.warning("Health check — DB error: %s", exc)
         db_status = f"error: {type(exc).__name__}"

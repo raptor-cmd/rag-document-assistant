@@ -54,7 +54,7 @@ async def upload_document(
             detail="Uploaded file is empty.",
         )
 
-    chunks_stored = await process_and_store_document(
+    chunks_stored, document_id = await process_and_store_document(
         file_bytes=file_bytes,
         filename=file.filename or "unknown.pdf",
         supabase=supabase,
@@ -65,4 +65,5 @@ async def upload_document(
         message="Document indexed successfully.",
         filename=file.filename or "unknown.pdf",
         chunks_stored=chunks_stored,
+        document_id=document_id,
     )

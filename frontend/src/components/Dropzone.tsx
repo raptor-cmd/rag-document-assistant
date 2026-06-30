@@ -13,7 +13,11 @@ interface UploadState {
   filename?: string;
 }
 
-export default function Dropzone() {
+interface DropzoneProps {
+  onIndexed?: (documentId: string, filename: string) => void;
+}
+
+export default function Dropzone({ onIndexed }: DropzoneProps = {}) {
   const [state, setState] = useState<UploadState>({ status: "idle" });
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -30,6 +34,7 @@ export default function Dropzone() {
         chunks: result.chunks_stored,
         filename: result.filename,
       });
+      onIndexed?.(result.document_id, result.filename);
     } catch (err) {
       setState({
         status: "error",

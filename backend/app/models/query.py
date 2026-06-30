@@ -5,12 +5,19 @@ class QueryRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=8000)
     match_count: int = Field(default=5, ge=1, le=20)
     match_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+    document_ids: list[str] = Field(default_factory=list)
 
 
 class DocumentMatch(BaseModel):
     id: str
     content: str
     similarity: float
+
+
+class ParentContext(BaseModel):
+    id: str
+    content: str
+    source: str
 
 
 class QueryResponse(BaseModel):
