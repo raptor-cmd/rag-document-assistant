@@ -8,7 +8,12 @@ import ChatWindow from "@/components/ChatWindow";
 
 type Tab = "documents" | "chat";
 
-export default function MobileTabs() {
+interface MobileTabsProps {
+  documentIds?: string[];
+  onDocumentIndexed?: (documentId: string, filename: string) => void;
+}
+
+export default function MobileTabs({ documentIds = [], onDocumentIndexed }: MobileTabsProps) {
   const [active, setActive] = useState<Tab>("chat");
 
   return (
@@ -38,7 +43,7 @@ export default function MobileTabs() {
       <div className="flex-1 overflow-hidden">
         {active === "chat" ? (
           <div className="flex h-full flex-col p-3">
-            <ChatWindow />
+            <ChatWindow documentIds={documentIds} />
           </div>
         ) : (
           <div className="h-full overflow-y-auto p-4">
@@ -48,7 +53,7 @@ export default function MobileTabs() {
             <p className="mb-4 text-xs text-[var(--muted)]">
               Index a PDF to search over its content
             </p>
-            <Dropzone />
+            <Dropzone onIndexed={onDocumentIndexed} />
           </div>
         )}
       </div>

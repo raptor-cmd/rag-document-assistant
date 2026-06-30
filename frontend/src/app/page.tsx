@@ -1,8 +1,19 @@
+"use client";
+
+import { useCallback, useState } from "react";
 import Dropzone from "@/components/Dropzone";
 import ChatWindow from "@/components/ChatWindow";
 import MobileTabs from "@/components/MobileTabs";
 
 export default function Home() {
+  const [activeDocumentIds, setActiveDocumentIds] = useState<string[]>([]);
+
+  const handleDocumentIndexed = useCallback((documentId: string) => {
+    setActiveDocumentIds((prev) =>
+      prev.includes(documentId) ? prev : [...prev, documentId],
+    );
+  }, []);
+
   return (
     <main className="flex h-dvh flex-col bg-[var(--background)] text-[var(--foreground)]">
       <header className="shrink-0 border-b border-[var(--border)] px-4 py-3 md:px-6 md:py-4">
@@ -23,7 +34,10 @@ export default function Home() {
 
       {/* Mobile layout — tabs */}
       <div className="flex flex-1 flex-col overflow-hidden md:hidden">
-        <MobileTabs />
+        <MobileTabs
+          documentIds={activeDocumentIds}
+          onDocumentIndexed={handleDocumentIndexed}
+        />
       </div>
 
       {/* Desktop layout — side by side */}
@@ -36,12 +50,12 @@ export default function Home() {
             <p className="mb-4 text-xs text-[var(--muted)]">
               Index a PDF to search over its content
             </p>
-            <Dropzone />
+            <Dropzone onIndexed={handleDocumentIndexed} />
           </div>
         </aside>
 
         <section className="flex flex-1 flex-col overflow-hidden p-4">
-          <ChatWindow />
+          <ChatWindow documentIds={activeDocumentIds} />
         </section>
       </div>
     </main>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { queryDocuments, type DocumentMatch } from "@/lib/api";
+import { queryDocuments } from "@/lib/api";
 import MessageBubble, { type Message } from "./MessageBubble";
 
 let messageCounter = 0;
@@ -11,11 +11,14 @@ function nextId() {
   return `msg-${++messageCounter}`;
 }
 
-export default function ChatWindow() {
+interface ChatWindowProps {
+  documentIds?: string[];
+}
+
+export default function ChatWindow({ documentIds = [] }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sources, setSources] = useState<DocumentMatch[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -35,7 +38,6 @@ export default function ChatWindow() {
     if (!query || isLoading) return;
 
     setInput("");
-    setSources([]);
     if (textareaRef.current) textareaRef.current.style.height = "auto";
 
     const userMsg: Message = { id: nextId(), role: "user", content: query };
@@ -50,34 +52,40 @@ export default function ChatWindow() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setIsLoading(true);
 
-    await queryDocuments(query, {
-      onSources: (s) => setSources(s),
-      onToken: (token) =>
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, content: m.content + token } : m,
+    await queryDocuments(
+      query,
+      {
+        onSources: () => {},
+        onToken: (token) =>
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: m.content + token } : m,
+            ),
           ),
-        ),
-      onDone: () => {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, isStreaming: false } : m,
-          ),
-        );
-        setIsLoading(false);
+        onDone: () => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, isStreaming: false } : m,
+            ),
+          );
+          setIsLoading(false);
+        },
+        onError: (err) => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: `Error: ${err.message}`, isStreaming: false }
+                : m,
+            ),
+          );
+          setIsLoading(false);
+        },
       },
-      onError: (err) => {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? { ...m, content: `Error: ${err.message}`, isStreaming: false }
-              : m,
-          ),
-        );
-        setIsLoading(false);
-      },
-    });
-  }, [input, isLoading]);
+      5,
+      0.5,
+      documentIds,
+    );
+  }, [input, isLoading, documentIds]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -108,24 +116,6 @@ export default function ChatWindow() {
         <div ref={bottomRef} />
       </div>
 
-      {sources.length > 0 && (
-        <div className="border-t border-[var(--border)] px-3 py-2">
-          <p className="mb-1.5 text-xs font-medium text-[var(--muted)]">
-            Sources ({sources.length})
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {sources.map((s) => (
-              <span
-                key={s.id}
-                title={s.content}
-                className="inline-flex items-center rounded-full bg-[var(--surface-hover)] px-2.5 py-0.5 text-xs text-[var(--muted)]"
-              >
-                {Math.round(s.similarity * 100)}% match
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="border-t border-[var(--border)] p-3">
         <div className="flex items-end gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 focus-within:border-[var(--accent)] transition-colors">

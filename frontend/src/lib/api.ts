@@ -4,6 +4,7 @@ export interface UploadResult {
   message: string;
   filename: string;
   chunks_stored: number;
+  document_id: string;
 }
 
 export interface DocumentMatch {
@@ -41,6 +42,7 @@ export async function queryDocuments(
   callbacks: StreamCallbacks,
   matchCount = 5,
   matchThreshold = 0.5,
+  documentIds: string[] = [],
 ): Promise<void> {
   const res = await fetch(`${API_URL}/api/v1/query`, {
     method: "POST",
@@ -49,6 +51,7 @@ export async function queryDocuments(
       query,
       match_count: matchCount,
       match_threshold: matchThreshold,
+      document_ids: documentIds,
     }),
   });
 
