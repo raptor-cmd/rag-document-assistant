@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 import CopyButton from "@/components/CopyButton";
 
@@ -33,7 +34,12 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         {isUser ? "U" : "AI"}
       </div>
 
-      <div className={cn("group relative max-w-[80%]", isUser && "flex flex-col items-end")}>
+      <div className={cn(
+          "group relative",
+          isUser
+            ? "max-w-[85%] sm:max-w-[78%] md:max-w-[70%] flex flex-col items-end"
+            : "max-w-[95%] sm:max-w-[90%] md:max-w-[88%]",
+        )}>
         <div
           className={cn(
             "rounded-2xl px-4 py-3 text-sm leading-relaxed",
@@ -45,36 +51,22 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
           {isUser ? (
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
           ) : (
-            <ReactMarkdown
-              components={{
-                p: ({ children }) => (
-                  <p className="mb-2 last:mb-0 whitespace-pre-wrap break-words">{children}</p>
-                ),
-                code: ({ children, className }) => {
-                  const isBlock = className?.includes("language-");
-                  return isBlock ? (
-                    <code className="block overflow-x-auto rounded-md bg-[var(--background)] p-3 text-xs font-mono mt-2 mb-2">
-                      {children}
-                    </code>
-                  ) : (
-                    <code className="rounded bg-[var(--background)] px-1.5 py-0.5 text-xs font-mono">
-                      {children}
-                    </code>
-                  );
-                },
-                ul: ({ children }) => (
-                  <ul className="mb-2 ml-4 list-disc space-y-1 last:mb-0">{children}</ul>
-                ),
-                ol: ({ children }) => (
-                  <ol className="mb-2 ml-4 list-decimal space-y-1 last:mb-0">{children}</ol>
-                ),
-                strong: ({ children }) => (
-                  <strong className="font-semibold">{children}</strong>
-                ),
-              }}
-            >
-              {message.content + (message.isStreaming ? "▋" : "")}
-            </ReactMarkdown>
+            <div className="prose prose-invert max-w-none prose-sm
+              prose-p:my-1.5 prose-p:leading-relaxed
+              prose-headings:font-semibold prose-headings:my-2
+              prose-ul:my-1.5 prose-ol:my-1.5
+              prose-li:my-0.5
+              prose-pre:bg-[var(--background)] prose-pre:rounded-lg prose-pre:p-3 prose-pre:my-2 prose-pre:overflow-x-auto
+              prose-code:bg-[var(--background)] prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-xs prose-code:before:content-none prose-code:after:content-none
+              prose-table:w-full prose-table:border-collapse prose-table:my-3
+              prose-th:border prose-th:border-[var(--border)] prose-th:bg-[var(--surface-hover)] prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:text-xs prose-th:font-semibold
+              prose-td:border prose-td:border-[var(--border)] prose-td:px-3 prose-td:py-2 prose-td:text-xs
+              prose-blockquote:border-l-2 prose-blockquote:border-[var(--accent)] prose-blockquote:pl-3 prose-blockquote:text-[var(--muted)] prose-blockquote:my-2
+              prose-strong:text-[var(--foreground)] prose-strong:font-semibold">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message.content + (message.isStreaming ? "▋" : "")}
+              </ReactMarkdown>
+            </div>
           )}
         </div>
 

@@ -41,7 +41,7 @@ export default function Home() {
       </div>
 
       {/* Desktop layout — side by side */}
-      <div className="mx-auto hidden w-full max-w-5xl flex-1 overflow-hidden md:flex">
+      <div className="mx-auto hidden w-full max-w-7xl flex-1 overflow-hidden md:flex">
         <aside className="flex w-80 shrink-0 flex-col gap-4 border-r border-[var(--border)] p-5">
           <div>
             <h2 className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">

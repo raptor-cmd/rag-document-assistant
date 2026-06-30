@@ -41,21 +41,18 @@ export default function MobileTabs({ documentIds = [], onDocumentIndexed }: Mobi
       </nav>
 
       <div className="flex-1 overflow-hidden">
-        {active === "chat" ? (
-          <div className="flex h-full flex-col p-3">
-            <ChatWindow documentIds={documentIds} />
-          </div>
-        ) : (
-          <div className="h-full overflow-y-auto p-4">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
-              Documents
-            </p>
-            <p className="mb-4 text-xs text-[var(--muted)]">
-              Index a PDF to search over its content
-            </p>
-            <Dropzone onIndexed={onDocumentIndexed} />
-          </div>
-        )}
+        <div className={cn("flex h-full flex-col p-3", active !== "chat" && "hidden")}>
+          <ChatWindow documentIds={documentIds} />
+        </div>
+        <div className={cn("h-full overflow-y-auto p-4", active !== "documents" && "hidden")}>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
+            Documents
+          </p>
+          <p className="mb-4 text-xs text-[var(--muted)]">
+            Index a PDF to search over its content
+          </p>
+          <Dropzone onIndexed={onDocumentIndexed} />
+        </div>
       </div>
     </div>
   );
